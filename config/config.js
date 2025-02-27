@@ -9,9 +9,6 @@ module.exports = {
     database: process.env.PGDATABASE,
     host: process.env.PGHOST,
     dialect: "postgres",
-    logging: false,
-    native: true,
-    ssl: true
   },
   test: {
     username: "root",

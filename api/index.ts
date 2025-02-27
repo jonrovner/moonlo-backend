@@ -1,18 +1,23 @@
-
 require("dotenv").config();
-//console.log("ENVIRONMENT ", process.env);
 
-const db_module:any = require('./src/db.ts');
+
 const server = require("./src/app.ts");
+const database = require("./src/db.ts");
+import { populateDB } from "./utils";
+ 
+  database.sequelize.sync({ force: false }).then(() => {
+    
+    populateDB();
 
-
-// Syncing all the models at once.
-
-db_module.sequelize.sync({ force: true }).then(() => {
-  
-
-  server.listen(process.env.PORT, () => {
-    console.log("%s listening at 3001");
+    server.listen(process.env.PORT, () => {
+      console.log("%s listening at 3001");
+    });
   });
-}).catch((e:any) => { console.log("ERROR FROM SEQUELIZE");
+ /* 
+}).catch((e) => { console.log("ERROR FROM SEQUELIZE", e);
 });
+
+
+/* server.listen(process.env.PORT, () => {
+  console.log("%s listening at 3001");
+}); */

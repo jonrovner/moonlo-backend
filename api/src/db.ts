@@ -1,54 +1,127 @@
-'use strict';
-import { PostgresDialect } from '@sequelize/postgres';
 
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-
-const config = require('../../config/config.js')[env]
-
+const { Sequelize, Model, DataTypes } = require('sequelize');
+const config = require('../../config/config.js')['development']
 console.log("CONFIG ", config);
+const db:any = {}
+let sequelize = new Sequelize(config.database, config.username, config.password, config)
 
+const User = sequelize.define(
+  'User',
+  {
+    name: {type: DataTypes.STRING, allowNull: false},
+    email: {type: DataTypes.STRING, allowNull: false, unique: true,
+      validate: {
+        notNull:{msg: "No empty email"},
+        isEmail: {msg: "must be valid email"}           
+      }
+      
+    },
+    moon: {type: DataTypes.STRING},
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    }
+  }
+)
 
-const db: any = {};
+console.log(User === sequelize.models.User);
 
-let sequelize = new Sequelize({
+const Chat = sequelize.define(
+  'Chat',
+  {
+    id:{
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey:true
+    },
+    user1:{
+      type:DataTypes.STRING
+    },
+    user2:{
+      type:DataTypes.STRING
+    }
 
-    dialect: 'postgres',
-    database: process.env.PGDATABASE,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    host: process.env.PGHOST,
-    port: 5432,
-    ssl: true,
-    clientMinMessages: 'notice',
+  }
+)
+console.log(Chat === sequelize.models.Chat);
 
+class Message extends Model {}
+
+Message.init(
+  {
+    id:{
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey:true
+  
+    },
+    content:{
+      type:DataTypes.STRING,
+      allowNull:false
+  
+    },
+    date: {
+      type:DataTypes.DATE
+  
+    },
+    sender_id:{
+      type: DataTypes.UUID,
+      references: {
+        model: User,
+        key: 'id'
+      }
+    },
+    chat_id: {
+      type: DataTypes.UUID,
+      references: {
+        model:Chat,
+        key:'id'
+      }
+    }
+  },
+  {
+    sequelize,
+    modelName: 'Message'
+  }
+)
+
+console.log(Message === sequelize.models.Message);
+
+for (let key in User) {
+
+  //console.log(key, User[key]);
+  if(User.hasMany){
+
+    User.hasMany(Chat)
+
+  }
+  if(Chat.hasMany){
+    Chat.hasMany(Message)
+  }
 }
 
+//User.hasMany(Chat);
+//Chat.hasMany(Message)
 
-
-);
-
-
-fs
-  .readdirSync(__dirname +"/models")
-  .filter((file: string) => {
-    return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.ts');
-  })
-  .forEach((file: any) => {
-    const model = require(path.join(__dirname +"/models", file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
-  });
-
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+db.User = User;
+db.Chat = Chat;
+db.Message = Message;
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-module.exports = db;
+
+
+//sequelize.models.User.hasMany(sequelize.models.Chat)
+//Chat.hasMany(User)
+//Chat.hasMany(Message)
+/* 
+(async () => {
+  await sequelize.sync({ force: true });
+  
+  console.log("sequelized");
+  // Code here
+})(); */
+
+module.exports = db
