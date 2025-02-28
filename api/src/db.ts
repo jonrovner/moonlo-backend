@@ -1,9 +1,14 @@
 
 const { Sequelize, Model, DataTypes } = require('sequelize');
+
 const config = require('../../config/config.js')['development']
-console.log("CONFIG ", config);
+//console.log("CONFIG ", config);
+
 const db:any = {}
+
 let sequelize = new Sequelize(config.database, config.username, config.password, config)
+
+// Model definitions
 
 const User = sequelize.define(
   'User',
@@ -25,26 +30,54 @@ const User = sequelize.define(
   }
 )
 
-console.log(User === sequelize.models.User);
+const Chat = sequelize.define("Chat", {
+  id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+  }
+});
 
-const Chat = sequelize.define(
-  'Chat',
+// ChatUser (Join Table)
+const ChatUser = sequelize.define("ChatUser", {
+  id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+  },
+  userId: {
+      type: DataTypes.UUID,
+      references: { model: "Users", key: "id" }
+  },
+  chatId: {
+      type: DataTypes.UUID,
+      references: { model: "Chats", key: "id" }
+  }
+});
+
+const Location = sequelize.define(
+  'Location',
   {
     id:{
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey:true
     },
-    user1:{
+    latitude:{
       type:DataTypes.STRING
     },
-    user2:{
+    longitude:{
       type:DataTypes.STRING
-    }
-
+    },
+    user_id:{
+      type:DataTypes.UUID,
+      references: {
+        model: User,
+        key: 'id'
+      }  
   }
-)
-console.log(Chat === sequelize.models.Chat);
+  })  
+
 
 class Message extends Model {}
 
@@ -78,6 +111,13 @@ Message.init(
         model:Chat,
         key:'id'
       }
+    },
+    location_id:{
+      type: DataTypes.UUID,
+      references: {
+        model:Location,
+        key:'id'
+      }
     }
   },
   {
@@ -86,42 +126,27 @@ Message.init(
   }
 )
 
-console.log(Message === sequelize.models.Message);
 
-for (let key in User) {
 
-  //console.log(key, User[key]);
-  if(User.hasMany){
+User.belongsToMany(Chat, { through: ChatUser });
+Chat.belongsToMany(User, { through: ChatUser });
 
-    User.hasMany(Chat)
+User.hasMany(Message, { foreignKey: 'sender_id' });
+Message.belongsTo(User, { foreignKey: 'sender_id' });
 
-  }
-  if(Chat.hasMany){
-    Chat.hasMany(Message)
-  }
-}
+Chat.hasMany(Message, { foreignKey: 'chat_id' });
+Message.belongsTo(Chat, { foreignKey: 'chat_id' });
 
-//User.hasMany(Chat);
-//Chat.hasMany(Message)
+User.hasMany(Location, { foreignKey: 'user_id' });
+Message.belongsTo(Location, { foreignKey: 'location_id' });
 
 db.User = User;
 db.Chat = Chat;
+db.ChatUser = ChatUser;
 db.Message = Message;
-
+db.Location = Location;
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-
-
-//sequelize.models.User.hasMany(sequelize.models.Chat)
-//Chat.hasMany(User)
-//Chat.hasMany(Message)
-/* 
-(async () => {
-  await sequelize.sync({ force: true });
-  
-  console.log("sequelized");
-  // Code here
-})(); */
 
 module.exports = db

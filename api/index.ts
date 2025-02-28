@@ -5,7 +5,7 @@ const server = require("./src/app.ts");
 const database = require("./src/db.ts");
 import { populateDB } from "./utils";
  
-  database.sequelize.sync({ force: false }).then(() => {
+  database.sequelize.sync({ force: true }).then(() => {
     
     populateDB();
 
