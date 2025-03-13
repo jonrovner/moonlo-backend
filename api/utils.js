@@ -1,6 +1,8 @@
-import { where } from 'sequelize';
 
 const { User, Chat, Message, Location } = require('./src/db.ts')
+
+const {client} = require('./src/mongo')
+import { createUser } from './src/services/users';
 
 
 export async function getUsersByMoon(moon) {
@@ -149,4 +151,39 @@ export async function populateDB() {
         console.log("ERROR ON POPULATE", e);
         
     }
+}
+
+export async function populateMongo(){
+
+    try{
+
+            await createUser({
+            name:"pirulo",
+            email:"pirulo@mail",
+            location:"string",
+            city:"string",
+            movies:["string"],
+            books:["string"],
+            music:["string"],
+            yearOfBirth:"string",
+            aboutMe:"string",
+            gender:"string",
+            lookingFor:"string",
+            smoking:true,
+            drink:false,
+            kids:true,
+            minAge:"string",
+            maxAge:"string",
+            sun:"string",
+            moon:"string",
+            asc:"string"
+            })
+
+    }catch(e){
+        console.log("MONGO ERROR", e);
+        
+    }finally{
+        await client.close()
+    }
+
 }
