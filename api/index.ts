@@ -70,7 +70,6 @@ import { populateDB, getUserWithChats, getUsersByMoon } from "./utils";
 }).catch((e) => { console.log("ERROR FROM SEQUELIZE", e);
 });
 
-
 /* server.listen(process.env.PORT, () => {
   console.log("%s listening at 3001");
 }); */

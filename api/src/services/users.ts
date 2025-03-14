@@ -1,6 +1,7 @@
 const {client} = require('../mongo')
 
 interface User {
+    auth0_id:string
     name:string
     email:string
     location:string
@@ -29,7 +30,6 @@ async function createUser(user:User){
         const db = client.db("moonlo")
         const users = db.collection("users")
         const result = await users.insertOne(user)
-        console.log('RESULT', result);
         return result
     } catch(e){
         console.log('ERROR CREATING USER', e)
@@ -37,6 +37,7 @@ async function createUser(user:User){
         client.close()
     }
 }
+
 async function getUsersByMoon(moon:string){
 
     try {
@@ -45,17 +46,36 @@ async function getUsersByMoon(moon:string){
         const users = db.collection("users")
         const query = { moon: moon };
         const usersWithMoon = await users.find(query).toArray()
-        console.log("Found", usersWithMoon);
         return usersWithMoon
         
 
-}catch(e){
-    
-    console.log("ERROR GETTING USERS", e);
-    
-}finally{
-    client.close()
-}
+    } catch(e) {
+
+        console.log("ERROR GETTING USERS", e);
+        
+    } finally {
+        client.close()
+    }
 }
 
-module.exports = {createUser, getUsersByMoon}
+async function getUserById(id:string){
+
+    try{
+        await client.connect()
+        const db = client.db("moonlo")
+        const users = db.collection("users")
+        const query = { auth0_id: id };
+        const userFromDB = await users.findOne(query)
+        return userFromDB
+    } catch(e) {
+
+        console.log("ERROR GETTING USERS", e);
+        
+    } finally {
+        client.close()
+    }
+
+
+}
+
+module.exports = {createUser, getUsersByMoon, getUserById}
