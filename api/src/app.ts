@@ -5,6 +5,7 @@ const server = express()
 
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
+server.use('/public', express.static(__dirname + '/public'));
 server.use('/api/users', userRoutes)
 server.get('/', async (req:Request, res:Response) => {
   
@@ -15,8 +16,6 @@ server.get('/', async (req:Request, res:Response) => {
 /* server.post('/api/users', async (req:Request, res:Response) =>{
 
 console.log("BODY : ", req.body);
-
-
 res.send("ok")
 
 }) */

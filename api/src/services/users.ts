@@ -78,4 +78,8 @@ async function getUserById(id:string){
 
 }
 
-module.exports = {createUser, getUsersByMoon, getUserById}
+module.exports = {
+    createUser, 
+    getUsersByMoon, 
+    getUserById
+}
