@@ -12,12 +12,6 @@ interface User {
     yearOfBirth:string
     aboutMe:string
     gender:string
-    lookingFor:string
-    smoking:boolean
-    drink:boolean
-    kids:boolean
-    minAge:string
-    maxAge:string
     sun:string
     moon:string
     asc:string
@@ -78,8 +72,27 @@ async function getUserById(id:string){
 
 }
 
+async function getUsers() {
+    try{
+        await client.connect()
+        const db = client.db("moonlo")
+        const users = db.collection("users")
+
+        const result = users.find().toArray()
+        return result
+
+    }catch(e){
+        console.log("error getting users", e);
+        
+
+    }finally{
+        //client.close()
+    }
+}
+
 module.exports = {
     createUser, 
     getUsersByMoon, 
-    getUserById
+    getUserById,
+    getUsers
 }

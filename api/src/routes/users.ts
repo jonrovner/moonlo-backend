@@ -2,7 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 import { Request, Response } from 'express';
-const {createUser, getUsersByMoon, getUserById} = require('../services/users')
+const {createUser, getUsersByMoon, getUserById, getUsers} = require('../services/users')
+
+router.get('/', async function (req:Request, res:Response){
+
+    const users = await getUsers()
+   
+    res.status(200).json(users)
+
+})
+
 
 router.post('/', async function (req:Request, res:Response){
     
