@@ -3,8 +3,8 @@ const userRoutes = require('../src/routes/users');
 
 const server = express()
 
-server.use(express.urlencoded({ extended: true }));
-server.use(express.json());
+server.use(express.json({ limit: '50mb' }));
+server.use(express.urlencoded({ limit: '50mb', extended: true }));
 server.use('/public', express.static(__dirname + '/public'));
 server.use('/api/users', userRoutes)
 server.get('/', async (req:Request, res:Response) => {

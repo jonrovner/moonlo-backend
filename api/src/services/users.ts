@@ -15,6 +15,7 @@ interface User {
     sun:string
     moon:string
     asc:string
+    picture_url:string
 }
 
 async function createUser(user:User){

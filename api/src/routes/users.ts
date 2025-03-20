@@ -3,6 +3,7 @@ const router = express.Router();
 
 import { Request, Response } from 'express';
 const {createUser, getUsersByMoon, getUserById, getUsers} = require('../services/users')
+const {getImageURL} = require('../services/pictures')
 
 router.get('/', async function (req:Request, res:Response){
 
@@ -15,8 +16,31 @@ router.get('/', async function (req:Request, res:Response){
 
 router.post('/', async function (req:Request, res:Response){
     
+    
     try {
-        const result = await createUser(req.body)
+        
+        const picture_url = await getImageURL(req.body.encodedImage)
+
+        const user_data = {
+            auth0_id:req.body.auth0_id,
+            name:req.body.name,
+            email:req.body.email,
+            location:req.body.location,
+            city:req.body.city,
+            movies:req.body.movies,
+            books:req.body.books,
+            music:req.body.music,
+            yearOfBirth:req.body.yearOfBirth,
+            aboutMe:req.body.aboutMe,
+            gender:req.body.gender,
+            sun:req.body.sun,
+            moon:req.body.moon,
+            asc:req.body.asc,
+            picture_url:picture_url
+            
+        }
+
+        const result = await createUser(user_data)
         if (result.acknowledged){
             res.status(201).json({new_user: result.insertedId})
         }
