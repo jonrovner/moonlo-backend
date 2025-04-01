@@ -1,91 +1,108 @@
 const express = require('express');
 const router = express.Router();
-
 import { Request, Response } from 'express';
-const {createUser, getUsersByMoon, getUserById, getUsers} = require('../services/users')
+
+const {createUser, getUsersByMoon, getUserById, getUsers, addToFavs} = require('../services/users')
 const {getImageURL} = require('../services/pictures')
 
+//get all users
 router.get('/', async function (req:Request, res:Response){
-
-    const users = await getUsers()
-   
-    res.status(200).json(users)
+    try {
+        const users = await getUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 
 })
 
-
+//create a user
 router.post('/', async function (req:Request, res:Response){
     
-    
     try {
-        
-        const picture_url = await getImageURL(req.body.encodedImage)
-
-        const user_data = {
-            auth0_id:req.body.auth0_id,
-            name:req.body.name,
-            email:req.body.email,
-            location:req.body.location,
-            city:req.body.city,
-            movies:req.body.movies,
-            books:req.body.books,
-            music:req.body.music,
-            yearOfBirth:req.body.yearOfBirth,
-            aboutMe:req.body.aboutMe,
-            gender:req.body.gender,
-            sun:req.body.sun,
-            moon:req.body.moon,
-            asc:req.body.asc,
-            picture_url:picture_url
-            
+        const { encodedImage, ...userData } = req.body;
+        if (!encodedImage) {
+            return res.status(400).json({ error: "Missing encodedImage" });
         }
-
-        const result = await createUser(user_data)
+        const picture_url = await getImageURL(encodedImage);
+        const newUser = {
+            ...userData,
+            picture_url,
+            favs: [],
+        };
+        const result = await createUser(newUser)
         if (result.acknowledged){
             res.status(201).json({new_user: result.insertedId})
         }
-        console.log("result", result);
+        res.status(500).json({ error: "Failed to create user" });
         
     } catch(e){
-        console.log("error creating user", e);        
+        console.error("Error creating user:", e);
+        res.status(500).json({ error: "Internal Server Error" });
     }   
 })
 
+//get users by moon
+
 router.get('/moon/:moon', async function (req:Request, res:Response) {
-
-    console.log('req params', req.params);
-    
-
-    const {moon} = req.params
-    
     try {
-        const users:any = await getUsersByMoon(moon)
-        res.json(users)
-        
+        const { moon } = req.params;
+        const users = await getUsersByMoon(moon);
 
-    } catch(e){
+        if (!users || users.length === 0) {
+            return res.status(404).json({ error: "No users found for this moon sign" });
+        }
+        res.json(users);
 
-        console.log("GET USERS ERROR", e);
-        
+    } catch (error) {
+        console.error("Error fetching users by moon sign:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
     
 })
 
+//get user by id
 router.get('/:id', async function (req:Request, res:Response) {
-
-
-    const {id} = req.params
-    
-    const profile = await getUserById(id)
-    if (profile){
-        
-        res.status(200).json(profile)
-    }
-    else {
-        res.send("no profile")
-    }
+    console.log("HEADERS : ", req.headers );
     
 
+    try {
+        const { id } = req.params;
+        const profile = await getUserById(id);
+
+        if (!profile) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.status(200).json(profile);
+    } catch (error) {
+        console.error("Error fetching user by ID:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
+
+//add user to user's favs
+router.post('/:id/favs', async function (req:Request, res:Response) {
+
+    try {
+        const { id } = req.params;
+        const { user_id } = req.body;
+
+        if (!user_id) {
+            return res.status(400).json({ error: "Missing user_id" });
+        }
+
+        const result = await addToFavs(id, user_id);
+        if (!result) {
+            return res.status(500).json({ error: "Failed to add to favorites" });
+        }
+
+        res.status(200).json({ message: "User added to favorites" });
+    } catch (error) {
+        console.error("Error adding user to favorites:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 
 })
 

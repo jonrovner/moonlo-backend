@@ -168,7 +168,8 @@ const users = [
       sun: "Leo",
       moon: "Virgo",
       asc: "Libra",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|002",
@@ -183,9 +184,10 @@ const users = [
       aboutMe: "Music producer and movie buff.",
       gender: "Male",
       sun: "Sagittarius",
-      moon: "Scorpio",
+      moon: "Virgo",
       asc: "Aries",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|003",
@@ -200,9 +202,10 @@ const users = [
       aboutMe: "Avid reader and tea lover.",
       gender: "Non-binary",
       sun: "Taurus",
-      moon: "Pisces",
+      moon: "Virgo",
       asc: "Gemini",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|004",
@@ -219,7 +222,8 @@ const users = [
       sun: "Aquarius",
       moon: "Libra",
       asc: "Sagittarius",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|005",
@@ -236,7 +240,8 @@ const users = [
       sun: "Pisces",
       moon: "Cancer",
       asc: "Virgo",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|006",
@@ -253,7 +258,8 @@ const users = [
       sun: "Cancer",
       moon: "Leo",
       asc: "Scorpio",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|007",
@@ -270,7 +276,8 @@ const users = [
       sun: "Capricorn",
       moon: "Aquarius",
       asc: "Taurus",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|008",
@@ -287,7 +294,8 @@ const users = [
       sun: "Virgo",
       moon: "Taurus",
       asc: "Cancer",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
     {
       auth0_id: "auth0|009",
@@ -304,7 +312,8 @@ const users = [
       sun: "Scorpio",
       moon: "Aries",
       asc: "Leo",
-      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg'
+      picture_url:'https://i.ibb.co/Qj3vps6P/cef45a4128d3.jpg',
+      favs:[]
     },
   ];
   
