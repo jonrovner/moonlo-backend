@@ -1,9 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const { auth } = require('express-oauth2-jwt-bearer');
 import { Request, Response } from 'express';
 
 const {createUser, getUsersByMoon, getUserById, getUsers, addToFavs} = require('../services/users')
 const {getImageURL} = require('../services/pictures')
+
+const checkJwt = auth({
+    audience: 'https://moonlo-api',
+    issuerBaseURL: 'https://moonlo.us.auth0.com/',
+    tokenSigningAlg: 'RS256'
+  });
+
 
 //get all users
 router.get('/', async function (req:Request, res:Response){
@@ -18,7 +26,7 @@ router.get('/', async function (req:Request, res:Response){
 })
 
 //create a user
-router.post('/', async function (req:Request, res:Response){
+router.post('/', checkJwt, async function (req:Request, res:Response){
     
     try {
         const { encodedImage, ...userData } = req.body;
@@ -35,7 +43,7 @@ router.post('/', async function (req:Request, res:Response){
         if (result.acknowledged){
             res.status(201).json({new_user: result.insertedId})
         }
-        res.status(500).json({ error: "Failed to create user" });
+        //res.status(500).json({ error: "Failed to create user" });
         
     } catch(e){
         console.error("Error creating user:", e);
@@ -45,7 +53,9 @@ router.post('/', async function (req:Request, res:Response){
 
 //get users by moon
 
-router.get('/moon/:moon', async function (req:Request, res:Response) {
+router.get('/moon/:moon', checkJwt, async function (req:Request, res:Response) {
+    console.log("MOON HEADERS ", req.headers);
+    
     try {
         const { moon } = req.params;
         const users = await getUsersByMoon(moon);
@@ -63,10 +73,8 @@ router.get('/moon/:moon', async function (req:Request, res:Response) {
 })
 
 //get user by id
-router.get('/:id', async function (req:Request, res:Response) {
-    console.log("HEADERS : ", req.headers );
-    
-
+router.get('/:id', checkJwt, async function (req:Request, res:Response) {
+   
     try {
         const { id } = req.params;
         const profile = await getUserById(id);
