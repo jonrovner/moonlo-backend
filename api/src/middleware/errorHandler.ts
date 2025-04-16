@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { MongoError } from 'mongodb';
 
 // Custom error classes
 export class AppError extends Error {
@@ -18,7 +19,7 @@ export class AppError extends Error {
 
 // Error handling middleware
 export const errorHandler = (
-  err: Error | AppError,
+  err: Error | AppError | MongoError,
   req: Request,
   res: Response,
   next: NextFunction
@@ -34,19 +35,24 @@ export const errorHandler = (
     status = err.status;
     message = err.message;
   }
-
-  // Handle Sequelize validation errors
-  if (err.name === 'SequelizeValidationError') {
-    statusCode = 400;
-    status = 'fail';
-    message = err.message;
-  }
-
-  // Handle Sequelize unique constraint errors
-  if (err.name === 'SequelizeUniqueConstraintError') {
-    statusCode = 409;
-    status = 'fail';
-    message = 'A record with this value already exists';
+  // Handle MongoDB errors
+  else if (err instanceof MongoError) {
+    switch (err.code) {
+      case 11000: // Duplicate key error
+        statusCode = 409;
+        status = 'fail';
+        message = 'A record with this value already exists';
+        break;
+      case 121: // Document validation error
+        statusCode = 400;
+        status = 'fail';
+        message = 'Document validation failed';
+        break;
+      default:
+        statusCode = 500;
+        status = 'error';
+        message = 'Database operation failed';
+    }
   }
 
   // Log error in development
