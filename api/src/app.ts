@@ -2,6 +2,7 @@ import express, {Request, Response, NextFunction} from "express";
 const { auth } = require('express-oauth2-jwt-bearer');
 const userRoutes = require('../src/routes/users');
 var morgan = require('morgan')
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
 const jwtCheck = auth({
   audience: 'https://moonlo-api',
@@ -21,4 +22,11 @@ server.use('/api/users', userRoutes)
 server.get('/', async (req:Request, res:Response) => {
   res.send('Hola!')
 })
+
+// Handle 404 routes
+server.use(notFoundHandler);
+
+// Global error handler
+server.use(errorHandler);
+
 module.exports = server
