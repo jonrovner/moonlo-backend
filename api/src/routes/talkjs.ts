@@ -27,6 +27,12 @@ router.get('/token', checkJwt, async (req: AuthRequest, res: Response) => {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
+        const encoded_jwt = jwt.sign({ tokenType: 'user' },process.env.TALKJS_SECRET_KEY, {
+            issuer: 'tsCGxV3Q',
+            subject: userId,
+            expiresIn: '1d',
+          });
+
         // Generate TalkJS token
         const token = jwt.sign(
             {
@@ -38,7 +44,7 @@ router.get('/token', checkJwt, async (req: AuthRequest, res: Response) => {
             process.env.TALKJS_SECRET_KEY
         );
 
-        res.status(200).json({ token });
+        res.status(200).json({ token: encoded_jwt });
     } catch (error) {
         console.error('Error generating TalkJS token:', error);
         res.status(500).json({ error: 'Internal Server Error' });
